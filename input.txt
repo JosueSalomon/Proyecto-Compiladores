@@ -1,0 +1,9 @@
+7Binario$
+123Octal$
+256Hexadecimal$
+1234Romano$
+45Duodecimal$
+15Aleatorio$
+25Binario$
+150Aleatorio$
+2457Romano$
