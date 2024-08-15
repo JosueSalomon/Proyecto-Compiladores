@@ -250,7 +250,7 @@ tokens = [
 ]
 
 # Expresiones regulares para tokens
-t_CONVERSION = r'Hexadecimal|Octal|Binario|Romano|Duodecimal|Aleatorio'
+t_CONVERSION = r'Hexadecimal|Octal|Binario|Romano|Duodecimal|Aleatorio|Maya'
 t_END = r'\$'
 
 def t_NUMBER(t):
@@ -315,6 +315,31 @@ def decimal_to_duodecimal(n):
         n //= 12
     return duodecimal_resultado
 
+def decimal_to_mayan(n):
+    if n == 0:
+        return "0"  # Concha para cero
+    
+    mayan_digits = []
+    while n > 0:
+        remainder = n % 20
+        mayan_digits.append(remainder)
+        n //= 20
+
+    # Convertir los dígitos a una representación textual
+    def value_to_mayan_string(value):
+        if value == 0:
+            return "0"  # Concha para cero
+        result = []
+        bars = value // 5
+        points = value % 5
+        
+        result.extend(['.' * points])  # Puntos
+        result.extend(['|' * bars])  # Barras
+        return ''.join(result)
+
+    mayan_representation = [value_to_mayan_string(value) for value in reversed(mayan_digits)]
+    return ' '.join(mayan_representation)
+
 def do_conversion(number, conversion):
     if conversion == 'Binario':
         return decimal_to_bin(number), conversion
@@ -326,8 +351,10 @@ def do_conversion(number, conversion):
         return decimal_to_roman(number), conversion
     elif conversion == 'Duodecimal':
         return decimal_to_duodecimal(number), conversion
+    elif conversion == 'Maya':
+        return decimal_to_mayan(number), conversion
     elif conversion == 'Aleatorio':
-        conversion_options = ['Binario', 'Octal', 'Hexadecimal', 'Romano', 'Duodecimal']
+        conversion_options = ['Binario', 'Octal', 'Hexadecimal', 'Romano', 'Duodecimal', 'Maya']
         chosen_conversion = random.choice(conversion_options)
         result = do_conversion(number, chosen_conversion)
         return result, chosen_conversion
