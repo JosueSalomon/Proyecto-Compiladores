@@ -20,7 +20,7 @@ tokens = [
 ]
 
 # Expresiones regulares para reconocer los tokens de conversión y fin
-t_CONVERSION = r'Hexadecimal|Octal|Binario|Romano|Duodecimal|Aleatorio|Maya'
+t_CONVERSION = r'Hexadecimal|Octal|Binario|Romano|Aleatorio|Maya'
 t_END = r'\$'
 
 # Expresión regular para reconocer números
@@ -78,17 +78,6 @@ def decimal_to_oct(n):
 def decimal_to_hex(n):
     return hex(n)[2:].upper()  # Elimina el prefijo '0x' y convierte a mayúsculas
 
-# Función para convertir de decimal a duodecimal
-def decimal_to_duodecimal(n):
-    if n == 0:
-        return "0"
-    duodecimal_digitos = "0123456789AB"
-    duodecimal_resultado = ""
-    while n > 0:
-        remainder = n % 12
-        duodecimal_resultado = duodecimal_digitos[remainder] + duodecimal_resultado
-        n //= 12
-    return duodecimal_resultado
 
 # Función para convertir de decimal a la numeración maya
 def decimal_to_mayan(n):
@@ -126,12 +115,10 @@ def do_conversion(number, conversion):
         return decimal_to_hex(number), conversion
     elif conversion == 'Romano':
         return decimal_to_roman(number), conversion
-    elif conversion == 'Duodecimal':
-        return decimal_to_duodecimal(number), conversion
     elif conversion == 'Maya':
         return decimal_to_mayan(number), conversion
     elif conversion == 'Aleatorio':
-        conversion_options = ['Binario', 'Octal', 'Hexadecimal', 'Romano', 'Duodecimal', 'Maya']
+        conversion_options = ['Binario', 'Octal', 'Hexadecimal', 'Romano', 'Maya']
         chosen_conversion = random.choice(conversion_options)  # Elige una conversión aleatoria
         result = do_conversion(number, chosen_conversion)
         return result, chosen_conversion
