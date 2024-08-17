@@ -186,19 +186,45 @@ def mostrar_resultados_texto():
 
     output_text.config(state="disabled")
 
+# Función personalizada para disposición jerárquica en NetworkX
+def hierarchy_pos(G, root=None, width=1., vert_gap=0.2, vert_loc=0, xcenter=0.5):
+    pos = _hierarchy_pos(G, root, width, vert_gap, vert_loc, xcenter)
+    return pos
+
+def _hierarchy_pos(G, root, width=1., vert_gap=0.2, vert_loc=0, xcenter=0.5, pos=None, parent=None, parsed=None):
+    if pos is None:
+        pos = {root: (xcenter, vert_loc)}
+    else:
+        pos[root] = (xcenter, vert_loc)
+    if parsed is None:
+        parsed = set()
+    parsed.add(root)
+    neighbors = list(G.neighbors(root))
+    if not isinstance(G, nx.DiGraph) and parent is not None:
+        neighbors.remove(parent)  # Remove the parent to prevent cycles
+
+    if len(neighbors) != 0:
+        dx = width / len(neighbors)
+        nextx = xcenter - width / 2 - dx / 2
+        for neighbor in neighbors:
+            nextx += dx
+            pos = _hierarchy_pos(G, neighbor, width=dx, vert_gap=vert_gap, vert_loc=vert_loc-vert_gap, 
+                                 xcenter=nextx, pos=pos, parent=root, parsed=parsed)
+    return pos
+
 # Alternativa 2: Visualizar árbol sintáctico usando networkx y matplotlib
 def mostrar_arbol_grafico(raiz_nodo):
-    G = nx.DiGraph() # Crear un grafo dirigido
+    G = nx.DiGraph()  # Crear un grafo dirigido
 
     def agregar_aristas(nodo):
         for hijo in nodo.children:
-            G.add_edge(nodo.name, hijo.name) # Añadir aristas del nodo padre al hijo
+            G.add_edge(nodo.name, hijo.name)  # Añadir aristas del nodo padre al hijo
             agregar_aristas(hijo)  # Recursión para los nodos hijos
 
     agregar_aristas(raiz_nodo)
 
-    pos = nx.spring_layout(G) # Disposición de nodos en el gráfico
-    nx.draw(G, pos, with_labels=True, node_size=2000, node_color="lightblue", font_size=10, font_weight="bold")
+    pos = hierarchy_pos(G, raiz_nodo.name)  # Disposición jerárquica de nodos
+    nx.draw(G, pos, with_labels=True, node_size=10000, node_color="lightgreen", font_size=10, font_weight="bold", arrows=False)
     plt.show()
 
 # Mostrar los resultados en la interfaz de usuario con visualización de grafos (networkx)
